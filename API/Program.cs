@@ -1,11 +1,15 @@
 
+using API.Features.Forecasts;
+using API.Infrastructure.Data;
+using API.Infrastructure.DI;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace API;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +20,17 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddDbContext<DataContext>(opt =>
+        {
+            opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+        });
+
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        builder.Services
+            //.AddConfigurations()
+            .AddDomainServices();
+
+
 
         var app = builder.Build();
 
@@ -33,6 +47,25 @@ public class Program
 
 
         app.MapControllers();
+
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var context = services.GetRequiredService<DataContext>();
+            await context.Database.MigrateAsync();
+            await Seed.SeedData(context);
+
+            _ = services.GetRequiredService<MinuteScheduler>();
+            
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred during migration");
+            throw;
+        }
 
         app.Run();
     }

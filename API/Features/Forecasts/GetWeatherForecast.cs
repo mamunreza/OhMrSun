@@ -17,11 +17,14 @@ public class GetWeatherForecast
     public class Handler : IRequestHandler<Query, WeatherForecastResult>
     {
         private readonly ILogger<Handler> _logger;
+        private readonly IOpenWeatherService _service;
 
         public Handler(
-            ILogger<Handler> logger)
+            ILogger<Handler> logger, 
+            IOpenWeatherService service)
         {
             _logger = logger;
+            _service = service;
         }
 
         public async Task<WeatherForecastResult> Handle(Query query, CancellationToken cancellationToken)
@@ -31,7 +34,7 @@ public class GetWeatherForecast
             {
                 _logger.LogInformation("Starting to get weather data");
 
-                // implement logic here
+                await _service.GetOpenWeatherData(query.Latitude, query.Longitude);
 
                 _logger.LogInformation("Weather {id} fetched successfully.", "id");
 
