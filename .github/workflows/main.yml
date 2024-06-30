@@ -24,8 +24,8 @@ jobs:
           dotnet-version: '8.0.x'
           
       - name: Restore
-        run: dotnet restore ./OhMrSun.sln
+        run: dotnet restore ./src/OhMrSun.sln
         
       - name: Build
-        run: dotnet build ./OhMrSun.sln --configuration Release --no-restore
+        run: dotnet build ./src/OhMrSun.sln --configuration Release --no-restore
 
