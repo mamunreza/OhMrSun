@@ -25,10 +25,21 @@ public class Program
             opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "CorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         builder.Services
             //.AddConfigurations()
-            .AddDomainServices();
+            .AddDomainServices()
+            .AddNotificationServices();
 
 
 
@@ -48,7 +59,7 @@ public class Program
         //app.UseHttpsRedirection();
 
         app.UseAuthorization();
-
+        app.UseCors("CorsPolicy");
 
         app.MapControllers();
 

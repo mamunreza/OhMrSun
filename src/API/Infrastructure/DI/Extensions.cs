@@ -1,5 +1,6 @@
 ﻿using API.Features.Activities;
 using API.Features.Forecasts;
+using API.Infrastructure.Notification;
 
 namespace API.Infrastructure.DI;
 
@@ -15,6 +16,13 @@ public static class Extensions
         services.AddScoped<IOpenWeatherService, OpenWeatherService>();
 
         services.AddSingleton<MinuteScheduler>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddNotificationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAzureServiceBusPublisher, AzureServiceBusPublisher>();
 
         return services;
     }
