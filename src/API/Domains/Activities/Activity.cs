@@ -9,9 +9,7 @@ public class Activity
 
     public static class FieldNames
     {
-        public const string Id = "incidentid";
+        public const string Id = "activityId";
         public const string Title = "title";
-        public const string ee_CaseInteractionType = "ee_caseinteractiontype";
-        public const string TicketNumber = "ticketnumber";
     }
 }

@@ -1,5 +1,6 @@
 ﻿using API.Domains.Activities;
 using API.Infrastructure.Logging;
+using API.Infrastructure.Notification;
 using AutoMapper;
 using MediatR;
 
@@ -25,20 +26,23 @@ public class CreateActivity
         private readonly IActivitiesRepository _activitiesRepository;
         private readonly ILogger<Handler> _logger;
         private readonly IMapper _mapper;
+        private readonly IAzureServiceBusPublisher _azureServiceBusPublisher;
 
         public Handler(IActivitiesRepository activitiesRepository,
             ILogger<Handler> logger,
-            IMapper mapper)
+            IMapper mapper,
+            IAzureServiceBusPublisher azureServiceBusPublisher)
         {
             _activitiesRepository = activitiesRepository;
             _logger = logger;
             _mapper = mapper;
+            _azureServiceBusPublisher = azureServiceBusPublisher;
         }
 
         public async Task<ActivitiesBaseResult> Handle(Command command, CancellationToken cancellationToken)
         {
             using (_logger.BeginNamedScope(nameof(Handler),
-                (Activity.FieldNames.Id, command.Title)))
+                (Activity.FieldNames.Title, command.Title)))
             {
                 _logger.LogInformation("Starting to create activity");
 
@@ -52,6 +56,8 @@ public class CreateActivity
                 var createdActivity = await _activitiesRepository.CreateActivityAsync(activity, cancellationToken);
 
                 _logger.LogInformation("Created activity with id: {0}", createdActivity.Id);
+
+                await _azureServiceBusPublisher.Publish("activity");
 
                 return _mapper.Map<ActivitiesBaseResult>(createdActivity);
             }
