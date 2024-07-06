@@ -8,7 +8,7 @@ public class MinuteScheduler
     public MinuteScheduler(ILogger<MinuteScheduler> logger)
     {
         _logger = logger;
-        _timer = new Timer(OnTimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+        _timer = new Timer(OnTimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
     }
 
     private void OnTimerCallback(object state)

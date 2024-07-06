@@ -25,6 +25,17 @@ public class ActivitiesController : ControllerBase
         return Ok(await _sender.Send(query, cancellationToken));
     }
 
+    [HttpGet("{activityId:Guid}", Name = "getActivitiyAsync")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetActivities.Result))]
+    public async Task<ActionResult<GetActivities.Result>> GetActivitiesAsync(
+        Guid activityId,
+        [FromQuery] GetActivity.Query query,
+        CancellationToken cancellationToken)
+    {
+        query.ActivityId = activityId;
+        return Ok(await _sender.Send(query, cancellationToken));
+    }
+
     [HttpPost("", Name = "createActivityAsync")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActivitiesBaseResult))]
     public async Task<ActionResult<ActivitiesBaseResult>> CreateActivityAsync(

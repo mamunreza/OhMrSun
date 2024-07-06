@@ -9,6 +9,8 @@ public interface IActivitiesRepository
     Task<Activity> CreateActivityAsync(Activity activity, CancellationToken cancellationToken);
     Task<(int TotalRecordCount, List<Activity> activities)> GetActivities(
         int recordCount, int pageNumber, CancellationToken cancellationToken);
+
+    Task<Activity?> GetActivityByIdAsync(Guid activityId, CancellationToken cancellationToken);
 }
 public class ActivitiesRepository : IActivitiesRepository
 {
@@ -36,5 +38,11 @@ public class ActivitiesRepository : IActivitiesRepository
     {
         var activities = await _context.Activities.ToListAsync();
         return (activities.Count, activities);
+    }
+
+    public async Task<Activity?> GetActivityByIdAsync(Guid activityId, CancellationToken cancellationToken)
+    {
+        return await _context.Activities
+            .FirstOrDefaultAsync(x => x.Id == activityId, cancellationToken: cancellationToken);
     }
 }
