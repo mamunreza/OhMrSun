@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  AZURE_WEBAPP_NAME: omswebapi
+  AZURE_WEBAPP_NAME: omswebapi-bhcbbzd5bse5eyev.germanywestcentral-01
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
   DOTNET_VERSION: '8.0.x'
 
