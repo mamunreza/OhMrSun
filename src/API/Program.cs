@@ -1,9 +1,11 @@
-
 using API.Features.Forecasts;
 using API.Infrastructure.Data;
 using API.Infrastructure.DI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 namespace API;
 
@@ -41,23 +43,33 @@ public class Program
             .AddDomainServices()
             .AddNotificationServices();
 
-
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            };
+        });
+        builder.Services.AddAuthorization();
 
         var app = builder.Build();
 
         app.UseSwagger();
         app.UseSwaggerUI();
 
-        // Configure the HTTP request pipeline.
-        //if (app.Environment.IsDevelopment())
-        //{
-        //    app.UseSwagger();
-        //    app.UseSwaggerUI();
-        //}
-
-
         //app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors("CorsPolicy");
 
@@ -68,9 +80,9 @@ public class Program
 
         try
         {
-            var context = services.GetRequiredService<DataContext>();
-            await context.Database.MigrateAsync();
-            await Seed.SeedData(context);
+            //var context = services.GetRequiredService<DataContext>();
+            //await context.Database.MigrateAsync();
+            //await Seed.SeedData(context);
 
             _ = services.GetRequiredService<MinuteScheduler>();
             

@@ -27,7 +27,7 @@ public class ActivitiesRepository : IActivitiesRepository
         _context.Activities.Add(activity);
         _ = await _context.SaveChangesAsync(cancellationToken);
 
-        var createdActivity = _context.Activities.FirstOrDefault(x => x.Id == activity.Id);
+        var createdActivity = await _context.Activities.FirstOrDefaultAsync(x => x.Id == activity.Id);
 
         return createdActivity!;
     }

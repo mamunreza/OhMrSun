@@ -1,7 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-//using static API.Features.Activities.GetActivities;
 
 namespace API.Features.Activities;
 
@@ -16,6 +16,7 @@ public class ActivitiesController : ControllerBase
         _sender = sender;
     }
 
+    [Authorize]
     [HttpGet("", Name = "getActivitiesAsync")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetActivities.Result))]
     public async Task<ActionResult<GetActivities.Result>> GetActivitiesAsync(
