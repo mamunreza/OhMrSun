@@ -80,9 +80,9 @@ public class Program
 
         try
         {
-            //var context = services.GetRequiredService<DataContext>();
-            //await context.Database.MigrateAsync();
-            //await Seed.SeedData(context);
+            var context = services.GetRequiredService<DataContext>();
+            await context.Database.MigrateAsync();
+            await Seed.SeedData(context);
 
             _ = services.GetRequiredService<MinuteScheduler>();
             
