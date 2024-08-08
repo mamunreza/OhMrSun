@@ -1,9 +1,13 @@
 using API.Features.Forecasts;
+using API.Infrastructure;
 using API.Infrastructure.Data;
 using API.Infrastructure.DI;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
 
@@ -18,9 +22,20 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        builder.Services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ReportApiVersions = false;
+        }).AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
+        })
+        .AddMvc();
 
         builder.Services.AddDbContext<DataContext>(opt =>
         {
@@ -63,6 +78,7 @@ public class Program
         builder.Services.AddAuthorization();
 
         var app = builder.Build();
+        //var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
         app.UseSwagger();
         app.UseSwaggerUI();

@@ -11,6 +11,7 @@ public interface IActivitiesRepository
         int recordCount, int pageNumber, CancellationToken cancellationToken);
 
     Task<Activity?> GetActivityByIdAsync(Guid activityId, CancellationToken cancellationToken);
+    Task<Activity> UpdateActivityAsync(Activity activity, CancellationToken cancellationToken);
 }
 public class ActivitiesRepository : IActivitiesRepository
 {
@@ -44,5 +45,15 @@ public class ActivitiesRepository : IActivitiesRepository
     {
         return await _context.Activities
             .FirstOrDefaultAsync(x => x.Id == activityId, cancellationToken: cancellationToken);
+    }
+
+    public async Task<Activity> UpdateActivityAsync(Activity activity, CancellationToken cancellationToken)
+    {
+        _context.Activities.Update(activity);
+        _ = await _context.SaveChangesAsync(cancellationToken);
+
+        var updatedActivity = await _context.Activities.FirstOrDefaultAsync(x => x.Id == activity.Id);
+
+        return updatedActivity!;
     }
 }

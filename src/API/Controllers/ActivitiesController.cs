@@ -5,6 +5,7 @@ using System.Net;
 
 namespace API.Features.Activities;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ActivitiesController : ControllerBase
@@ -16,7 +17,6 @@ public class ActivitiesController : ControllerBase
         _sender = sender;
     }
 
-    [Authorize]
     [HttpGet("", Name = "getActivitiesAsync")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetActivities.Result))]
     public async Task<ActionResult<GetActivities.Result>> GetActivitiesAsync(
@@ -43,6 +43,17 @@ public class ActivitiesController : ControllerBase
         CreateActivity.Command command,
         CancellationToken cancellationToken)
     {
+        return Ok(await _sender.Send(command, cancellationToken));
+    }
+
+    [HttpPatch("{activityId:Guid}", Name = "updateActivityAsync")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActivitiesBaseResult))]
+    public async Task<ActionResult<ActivitiesBaseResult>> UpdateActivityAsync(
+        Guid activityId,
+        UpdateActivity.Command command,
+        CancellationToken cancellationToken)
+    {
+        command.ActivityId = activityId;
         return Ok(await _sender.Send(command, cancellationToken));
     }
 }
