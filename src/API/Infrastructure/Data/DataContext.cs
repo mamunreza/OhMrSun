@@ -7,13 +7,22 @@ namespace API.Infrastructure.Data
     {
         public DbSet<Activity> Activities { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder
-        //        .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //modelBuilder
+            //    .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        //    base.OnModelCreating(modelBuilder);
-        //}
+            //base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Activity>()
+                .Property(p => p.Status)
+                .HasDefaultValue(ActivityStatus.Open);
+
+            modelBuilder.Entity<Activity>()
+                .Property(p => p.StatusReason)
+                .HasDefaultValue(ActivityStatusReason.OpenNew);
+        }
     }
 
 }

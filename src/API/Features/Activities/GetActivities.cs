@@ -29,6 +29,7 @@ public class GetActivities
         public string Title { get; set; } = string.Empty;
         public DateTime? ActivityDate { get; set; }
         public string? Description { get; set; }
+        public ActivityStatus Status { get; set; }
     }
 
     public class Handler : IRequestHandler<Query, Result>
