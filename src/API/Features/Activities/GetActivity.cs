@@ -2,6 +2,7 @@
 using API.Infrastructure.Logging;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace API.Features.Activities;
@@ -39,7 +40,10 @@ public class GetActivity
 
                 var activity = await _repository.GetActivityByIdAsync(query.ActivityId, cancellationToken);
 
-                _logger.LogInformation("Activity: {Title} fetched successfully.", activity.Title);
+                if (activity != null)
+                {
+                    _logger.LogInformation("Activity: {Title} fetched successfully.", activity!.Title);
+                }
 
                 return activity;
             }
