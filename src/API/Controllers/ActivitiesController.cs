@@ -5,7 +5,7 @@ using System.Net;
 
 namespace API.Features.Activities;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ActivitiesController : ControllerBase
