@@ -3,7 +3,6 @@ using API.Infrastructure.Logging;
 using API.Infrastructure.Notification;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace API.Features.Activities;
 

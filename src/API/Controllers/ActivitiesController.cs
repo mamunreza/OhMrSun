@@ -56,4 +56,16 @@ public class ActivitiesController : ControllerBase
         command.ActivityId = activityId;
         return Ok(await _sender.Send(command, cancellationToken));
     }
+
+    [HttpDelete("{activityId:Guid}", Name = "deleteActivityAsync")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActivitiesBaseResult))]
+    public async Task<ActionResult<ActivitiesBaseResult>> DeleteActivityAsync(
+        Guid activityId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteActivity.Command { ActivityId = activityId };
+
+        command.ActivityId = activityId;
+        return Ok(await _sender.Send(command, cancellationToken));
+    }
 }
