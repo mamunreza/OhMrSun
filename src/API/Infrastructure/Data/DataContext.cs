@@ -17,11 +17,13 @@ namespace API.Infrastructure.Data
 
             modelBuilder.Entity<Activity>()
                 .Property(p => p.Status)
-                .HasDefaultValue(ActivityStatus.Open);
+                .HasDefaultValue(ActivityStatus.Open)
+                .HasSentinel(default);
 
             modelBuilder.Entity<Activity>()
                 .Property(p => p.StatusReason)
-                .HasDefaultValue(ActivityStatusReason.OpenNew);
+                .HasDefaultValue(ActivityStatusReason.OpenNew)
+                .HasSentinel(default);
         }
     }
 

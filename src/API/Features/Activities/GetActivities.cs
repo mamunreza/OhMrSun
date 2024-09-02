@@ -5,14 +5,15 @@ using MediatR;
 
 namespace API.Features.Activities;
 
-public class GetActivities
+public partial class GetActivities
 {
     public record Query : IRequest<Result>
     {
-        public int Page { get; set; } = 1;
+        public int Page { get; set; }
         /// <summary> Number of records per page, default is 5 </summary>
         /// <example>5</example>
-        public int PageLimit { get; set; } = 5;
+        public int PageLimit { get; set; }
+        public ActivityTimeStatus TimeStatus { get; set; }
     }
 
     public record Result
@@ -54,8 +55,42 @@ public class GetActivities
             {
                 _logger.LogInformation("Starting to get activities");
 
+                ActivityQueryCriteria criteria = new ActivityQueryCriteria()
+                {
+                    Page = query.Page,
+                    PageLimit = query.PageLimit
+                };
+
                 (int TotalRecordCount, List<Activity> Activities) activitiesByQuery;
-                activitiesByQuery = await _repository.GetActivities(query.PageLimit, query.Page, cancellationToken);
+
+                if (query.TimeStatus == ActivityTimeStatus.RECENT)
+                {
+                    activitiesByQuery = await _repository.GetRecentActivities(criteria, cancellationToken);
+                }
+                else if (query.TimeStatus == ActivityTimeStatus.IN_PROGRESS)
+                {
+                    activitiesByQuery = await _repository.GetInProgressActivities(criteria, cancellationToken);
+                }
+                else if (query.TimeStatus == ActivityTimeStatus.FUTURE)
+                {
+                    activitiesByQuery = await _repository.GetFutureActivities(criteria, cancellationToken);
+                }
+                else if (query.TimeStatus == ActivityTimeStatus.NOT_SCHECULED)
+                {
+                    activitiesByQuery = await _repository.GetNotScheduledActivities(criteria, cancellationToken);
+                }
+                else if (query.TimeStatus == ActivityTimeStatus.PAST)
+                {
+                    activitiesByQuery = await _repository.GetPastActivities(criteria, cancellationToken);
+                }
+                else if (query.TimeStatus == ActivityTimeStatus.SUGGESTED)
+                {
+                    activitiesByQuery = await _repository.GetSuggestedActivities(criteria, cancellationToken);
+                }
+                else
+                {
+                    activitiesByQuery = await _repository.GetActivities(criteria, cancellationToken);
+                }
 
                 var mappedActivities = _mapper.Map<List<Activity>, List<ActivityRecord>>(activitiesByQuery.Activities);
 

@@ -1,0 +1,17 @@
+
+services:
+  omsapi:
+    build:
+      context: ../src/Api/
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - POSTGRES_HOST=host.docker.internal
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=ohmrsun
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=sa123
+      - ASPNETCORE_URLS=http://0.0.0.0:8082
+    restart: always

@@ -50,7 +50,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 #pragma warning restore 612, 618
         }
