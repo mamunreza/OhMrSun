@@ -25,6 +25,7 @@ public interface IActivitiesRepository
     Task<Activity?> GetActivityByIdAsync(Guid activityId, CancellationToken cancellationToken);
     Task<Activity> UpdateActivityAsync(Activity activity, CancellationToken cancellationToken);
     Task<int> DeleteActivityAsync(Activity activityToDelete, CancellationToken cancellationToken);
+    Task<List<TopNDaysWithMostActivities>> GetTopNDaysWithMostActivities(int n, CancellationToken cancellationToken);
 }
 public partial class ActivitiesRepository : IActivitiesRepository
 {
@@ -47,7 +48,7 @@ public partial class ActivitiesRepository : IActivitiesRepository
     }
 
     public async Task<(int TotalRecordCount, List<Activity> activities)> GetActivities(
-        ActivityQueryCriteria criteria, 
+        ActivityQueryCriteria criteria,
         CancellationToken cancellationToken)
     {
         var totalRecordCount = await _context.Activities.CountAsync(cancellationToken);
@@ -156,7 +157,7 @@ public partial class ActivitiesRepository : IActivitiesRepository
         await Task.Delay(1500);
         var totalRecordCount = 0;
 
-        var activities = new List<Activity> ();
+        var activities = new List<Activity>();
 
         await Task.CompletedTask;
         return (totalRecordCount, activities);
@@ -185,4 +186,22 @@ public partial class ActivitiesRepository : IActivitiesRepository
 
         return deleteResponse;
     }
+    public async Task<List<TopNDaysWithMostActivities>> GetTopNDaysWithMostActivities(
+        int n, CancellationToken cancellationToken)
+    {
+        var topNDays = await _context.Activities
+            .Where(x => x.ActivityDate.HasValue)
+            .GroupBy(x => x.ActivityDate!.Value.Date)
+            .OrderByDescending(g => g.Count())
+            .Take(n)
+            .Select(g => new TopNDaysWithMostActivities { Day = g.Key, ActivityCount = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return topNDays;
+    }
+}
+public class TopNDaysWithMostActivities
+{
+    public DateTime Day { get; set; }
+    public int ActivityCount { get; set; }
 }

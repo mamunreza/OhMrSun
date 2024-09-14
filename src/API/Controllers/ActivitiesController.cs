@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Features.Activities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -68,4 +69,14 @@ public class ActivitiesController : ControllerBase
         command.ActivityId = activityId;
         return Ok(await _sender.Send(command, cancellationToken));
     }
+
+    [HttpGet("busy-days", Name = "getTopNDaysWithMostActivitiesAsync")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetTopNDaysWithMostActivities.Result))]
+    public async Task<ActionResult<GetTopNDaysWithMostActivities.Result>> GetTopNDaysWithMostActivitiesAsync(
+        [FromQuery] GetTopNDaysWithMostActivities.Query query,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _sender.Send(query, cancellationToken));
+    }
+
 }
